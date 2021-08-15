@@ -7,18 +7,21 @@ const router = express.Router();
 
 router.use(express.json());
 
+//set up a variable for the path to our data file (db.json)
 const dbPath = path.join(__dirname, '..', 'db', 'db.json');
 console.log('dbPath is ',dbPath);
 
+// A function get our data from the db.json file
 function getNotesFromDb() {
-
     return JSON.parse(fs.readFileSync(dbPath, 'utf-8')) || [];
 }
 
+// A function write our data to the db.json file
 function writeNotesToDb(content) {
     fs.writeFileSync(dbPath, JSON.stringify(content));
 }
 
+//route to get notes
 router.get('/api/notes', (req, res) => {
 
     const notes = getNotesFromDb();
@@ -26,6 +29,7 @@ router.get('/api/notes', (req, res) => {
     res.json(notes);
 });
 
+//route to add notes
 router.post('/api/notes', (req, res) => {
 
     const notes = getNotesFromDb();
@@ -46,18 +50,17 @@ router.post('/api/notes', (req, res) => {
     });
 });
 
+
+//route to delete notes
 router.delete('/api/notes/:id', (req, res) => {
     const notes = getNotesFromDb();
 
     const filtered = notes.filter((note) => {
-        console.log ('req.params.id ', req.params.id);
         return note.id !== req.params.id;
     });
 
-    console.log('filtered ',filtered);
-    console.log('before');
     writeNotesToDb(filtered);
-    console.log('after');
+    
     res.json({ 
         data: 'deleted'
     });
